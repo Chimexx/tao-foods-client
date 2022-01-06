@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { itemFetch, itemsFetch, meatFetch, sauceFetch } from "./productApi";
 
 const initialState = {
 	itemList: [],
-	item: [],
 	meatList: [],
 	sauceList: [],
 	pending: false,
@@ -13,34 +11,59 @@ const initialState = {
 const productSlice = createSlice({
 	name: "items",
 	initialState,
-	reducers: {},
-	extraReducers: {
-		[itemsFetch.pending]: (state) => {
-			return { ...state, pending: true };
+	reducers: {
+		//FetchItems
+		fetchItemsStart: (state) => {
+			state.pending = true;
 		},
-		[itemsFetch.fulfilled]: (state, { payload }) => {
-			return { ...state, pending: false, itemList: payload };
-
-			// if (payload) {
-			// 	return { ...state, pending: false, itemList: payload };
-			// } else {
-			// 	return { ...state, pending: true };
-			// }
+		fetchItemsSuccess: (state, action) => {
+			state.pending = false;
+			state.error = false;
+			state.itemList = action.payload;
 		},
-		[itemsFetch.rejected]: (state) => {
-			return { ...state, error: true, pending: false };
+		fetchItemsFailure: (state) => {
+			state.pending = false;
+			state.error = true;
 		},
-		[itemFetch.fulfilled]: (state, { payload }) => {
-			return { ...state, item: payload, pending: false };
+		//FetchMeat
+		fetchMeatStart: (state) => {
+			state.pending = true;
 		},
-		[meatFetch.fulfilled]: (state, { payload }) => {
-			return { ...state, meatList: payload, pending: false };
+		fetchMeatSuccess: (state, action) => {
+			state.pending = false;
+			state.error = false;
+			state.meatList = action.payload;
 		},
-		[sauceFetch.fulfilled]: (state, { payload }) => {
-			return { ...state, sauceList: payload, pending: false };
+		fetchMeatFailure: (state) => {
+			state.pending = false;
+			state.error = true;
+		},
+		//FetchSauce
+		fetchSauceStart: (state) => {
+			state.pending = true;
+		},
+		fetchSauceSuccess: (state, action) => {
+			state.pending = false;
+			state.error = false;
+			state.sauceList = action.payload;
+		},
+		fetchSauceFailure: (state) => {
+			state.pending = false;
+			state.error = true;
 		},
 	},
 });
 
 export default productSlice.reducer;
 export const getState = (state) => state.items;
+export const {
+	fetchSauceStart,
+	fetchSauceSuccess,
+	fetchSauceFailure,
+	fetchItemsStart,
+	fetchItemsSuccess,
+	fetchItemsFailure,
+	fetchMeatStart,
+	fetchMeatSuccess,
+	fetchMeatFailure,
+} = productSlice.actions;

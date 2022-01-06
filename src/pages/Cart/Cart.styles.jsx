@@ -46,11 +46,9 @@ export const useStyles = makeStyles((theme) => ({
 		backgroundPosition: "center",
 		backgroundAttachment: "fixed",
 		display: "flex",
-
-		// [theme.breakpoints.down("sm")]: {
-		// 	marginRight: theme.spacing(2),
-		// 	// maxWidth: "380px",
-		// },
+	},
+	cart: {
+		backgroundColor: "#fbf3d5",
 	},
 	topbar: {
 		display: "flex",
@@ -153,6 +151,7 @@ export const useStyles = makeStyles((theme) => ({
 	},
 	option: {
 		marginTop: theme.spacing(1),
+		color: "#464646",
 
 		[theme.breakpoints.down("sm")]: {
 			marginTop: theme.spacing(0.5),
@@ -167,7 +166,7 @@ export const useStyles = makeStyles((theme) => ({
 		},
 	},
 	checkoutbutton: {
-		color: theme.button.success.main,
+		color: "theme.button.primary.main",
 	},
 
 	backbutton: {

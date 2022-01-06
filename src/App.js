@@ -4,17 +4,15 @@ import Item from "./pages/Item";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Slide } from "react-toastify";
 import ItemList from "./pages/ItemList";
 import OrderSuccess from "./components/OrderSuccess";
+import Snackbar from "./components/SnackBar/snackbar";
 
 function App() {
 	return (
 		<Router>
 			<div className="app">
-				<ToastContainer transition={Slide} />
+				<Snackbar />
 				<Routes>
 					<Route path="/" exact element={<Home />} />
 					<Route path="/items/:category" exact element={<ItemList />} />

@@ -6,14 +6,16 @@ import { theme } from "./theme";
 import { ThemeProvider } from "@material-ui/styles";
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "./redux/store";
 
 ReactDOM.render(
-	<React.StrictMode>
-		<ThemeProvider theme={theme}>
-			<Provider store={store}>
+	<ThemeProvider theme={theme}>
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
 				<App />
-			</Provider>
-		</ThemeProvider>
-	</React.StrictMode>,
+			</PersistGate>
+		</Provider>
+	</ThemeProvider>,
 	document.getElementById("root")
 );

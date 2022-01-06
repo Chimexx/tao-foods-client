@@ -10,10 +10,9 @@ import {
 	Typography,
 } from "@material-ui/core";
 import { AddCircleOutline, ArrowLeft, RemoveCircleOutline } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { itemFetch, meatFetch, sauceFetch } from "../../redux/productApi";
 import { getState } from "../../redux/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useStyles } from "./Item.styles";
@@ -21,6 +20,7 @@ import { addToCart } from "../../redux/cartSlice";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { MetroSpinner } from "react-spinners-kit";
+import { setSnackbar } from "../../redux/snackbarSlice";
 
 const Item = () => {
 	const classes = useStyles({});
@@ -35,15 +35,8 @@ const Item = () => {
 	const [meatPrice, setMeatPrice] = useState("");
 	const [quantity, setQuantity] = useState(1);
 
-	useEffect(() => {
-		dispatch(itemFetch(id));
-		dispatch(meatFetch());
-		dispatch(sauceFetch());
-	}, [id, dispatch]);
-
-	const { item, sauceList, meatList, pending, error } = useSelector(getState);
-	// const cart = useSelector((state) => state.cart);
-	// console.log(cart);
+	const { itemList, sauceList, meatList, pending, error } = useSelector(getState);
+	const item = itemList.find((item) => item._id === id);
 
 	const handleChange = (e) => {
 		e.preventDefault();
@@ -61,6 +54,13 @@ const Item = () => {
 				meat,
 				meatPrice,
 				sauce,
+			})
+		);
+		dispatch(
+			setSnackbar({
+				snackbarOpen: true,
+				snackbarType: "success",
+				snackbarMessage: `${item.title} added to tray!`,
 			})
 		);
 	};
@@ -93,7 +93,7 @@ const Item = () => {
 		return (
 			<>
 				<Navbar />
-				<div className={classes.spinner}>Please Check your network</div>
+				<div>Please Check your network</div>
 			</>
 		);
 	}
@@ -120,10 +120,10 @@ const Item = () => {
 						<Typography component="h5" variant="h5" className={classes.title}>
 							{item.title}
 						</Typography>
-						<Typography variant="subtitle1" color="textSecondary" className={classes.desc}>
+						<Typography variant="subtitle1" className={classes.desc}>
 							{item.desc}
 						</Typography>
-						<Typography variant="subtitle1" color="textSecondary" className={classes.price}>
+						<Typography variant="subtitle1" className={classes.price}>
 							Price:
 							{price
 								? ` ₦${(item.price + meatPrice) * quantity}`
@@ -171,23 +171,18 @@ const Item = () => {
 							)}
 						</div>
 
-						<ButtonGroup
-							color="info"
-							aria-label="outlined secondary button group"
-							className={classes.btngrp}
-						>
-							<Button>
-								<RemoveCircleOutline style={{ color: "bebebe" }} onClick={() => set("dec")} />
+						<ButtonGroup aria-label="outlined secondary button group" className={classes.btngrp}>
+							<Button onClick={() => set("dec")}>
+								<RemoveCircleOutline style={{ color: "bebebe" }} />
 							</Button>
 							<Button>{quantity}</Button>
-							<Button>
-								<AddCircleOutline style={{ color: "bebebe" }} onClick={() => set("inc")} />
+							<Button onClick={() => set("inc")}>
+								<AddCircleOutline style={{ color: "bebebe" }} />
 							</Button>
 						</ButtonGroup>
 						<div className={classes.tray}>
 							<Button
 								variant="outlined"
-								color="success.main"
 								href="#outlined-buttons"
 								className={classes.checkoutbutton}
 								onClick={handleAddToCart}
@@ -195,12 +190,7 @@ const Item = () => {
 								ADD TO TRAY
 							</Button>
 							<Link to="/cart">
-								<Button
-									variant="outlined"
-									color="primary"
-									href="#outlined-buttons"
-									className={classes.button}
-								>
+								<Button variant="outlined" color="primary" className={classes.button}>
 									VIEW TRAY
 								</Button>
 							</Link>

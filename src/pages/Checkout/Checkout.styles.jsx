@@ -41,6 +41,7 @@ export const useStyles = makeStyles((theme) => ({
 		margin: "8px",
 		fontWeight: 600,
 		color: "#ff8400",
+		transition: "ease-in-out all 1s",
 
 		[theme.breakpoints.down("sm")]: {
 			height: "30px",
@@ -51,5 +52,8 @@ export const useStyles = makeStyles((theme) => ({
 		display: "grid",
 		gridTemplateColumns: "repeat(2, 1fr)",
 		justifyContent: "space-between",
+	},
+	info: {
+		color: "#ff8400",
 	},
 }));

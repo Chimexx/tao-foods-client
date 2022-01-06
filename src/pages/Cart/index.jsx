@@ -19,28 +19,49 @@ import { addToCart, decQty, getCart, clearCart, getTotals } from "../../redux/ca
 import { removeFromCart } from "../../redux/cartSlice";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { useEffect } from "react";
+import { setSnackbar } from "../../redux/snackbarSlice";
 
 const Cart = (props) => {
 	const classes = useStyles(props);
 	const dispatch = useDispatch();
 
 	const { cartItems, cartTotalAmount, cartTotalQty, takeAway } = useSelector(getCart);
-	console.log(cartItems);
 
 	const handleAddToCart = (item) => {
 		dispatch(addToCart(item));
+		dispatch(getTotals());
 	};
 	const handleRemoveFromCart = (item) => {
 		dispatch(removeFromCart(item));
+		dispatch(getTotals());
+		dispatch(
+			setSnackbar({
+				snackbarOpen: true,
+				snackbarType: "success",
+				snackbarMessage: `${item.title} removed from tray!`,
+			})
+		);
 	};
 	const handleDecrease = (item) => {
 		dispatch(decQty(item));
+		dispatch(getTotals());
 	};
 	const handleclearCart = () => {
 		dispatch(clearCart());
+		dispatch(getTotals());
+		dispatch(
+			setSnackbar({
+				snackbarOpen: true,
+				snackbarType: "success",
+				snackbarMessage: `Tray is empty!`,
+			})
+		);
 	};
 
-	dispatch(getTotals());
+	useEffect(() => {
+		dispatch(getTotals());
+	}, [dispatch]);
 
 	return (
 		<>
@@ -77,7 +98,7 @@ const Cart = (props) => {
 								<CardMedia
 									className={classes.media}
 									component="img"
-									alt=""
+									alt="item img"
 									height="200"
 									image={item.img}
 									title="Dish"
@@ -86,20 +107,12 @@ const Cart = (props) => {
 									<div className={classes.details}>
 										<div className={classes.typogroup}>
 											<Typography component="h6" variant="h6">
-												{item.title}
+												Dish: {item.title}
 											</Typography>
-											<Typography
-												variant="subtitle2"
-												color="textSecondary"
-												className={classes.option}
-											>
-												{item.meat}
+											<Typography variant="subtitle2" className={classes.option}>
+												Meat: {item.meat}
 											</Typography>
-											<Typography
-												variant="body2"
-												color="textSecondary"
-												className={classes.option}
-											>
+											<Typography variant="body2" className={classes.option}>
 												ID: {item._id}
 											</Typography>
 										</div>
@@ -151,22 +164,22 @@ const Cart = (props) => {
 					<Card className={classes.cart}>
 						<CardActionArea>
 							<CardContent className={classes.summarycontent}>
-								<div button className={classes.listitem}>
+								<div className={classes.listitem}>
 									<span className={classes.listcontent}>Subtotal</span>
 									<span className={classes.listcontent}>₦ {cartTotalAmount}</span>
 								</div>
 								<Divider />
-								<div button className={classes.listitem}>
+								<div className={classes.listitem}>
 									<span className={classes.listcontent}>Total Quantity</span>
 									<span className={classes.listcontent}>{cartTotalQty}</span>
 								</div>
 								<Divider />
-								<div button className={classes.listitem}>
+								<div className={classes.listitem}>
 									<span className={classes.listcontent}>Take away plate</span>
 									<span className={classes.listcontent}>₦ {takeAway * cartTotalQty}</span>
 								</div>
 								<Divider />
-								<div button className={classes.listitem}>
+								<div className={classes.listitem}>
 									<span type="total" className={classes.listcontent}>
 										Total
 									</span>
@@ -181,7 +194,7 @@ const Cart = (props) => {
 								<Button
 									size="medium"
 									variant="outlined"
-									color="success"
+									color="primary"
 									className={classes.checkoutbutton}
 								>
 									CHECKOUT NOW

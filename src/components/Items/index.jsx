@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import SingleItem from "../SingleItem";
 import { Grid } from "@material-ui/core";
 import { useStyles } from "./Items.styles";
-import { itemsFetch } from "../../redux/productApi";
+import { itemsFetch, meatFetch, sauceFetch } from "../../redux/requestApi";
 import { useDispatch, useSelector } from "react-redux";
 import { getState } from "../../redux/productSlice";
 import { MetroSpinner } from "react-spinners-kit";
@@ -12,7 +12,9 @@ const Items = ({ cat }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(itemsFetch(cat));
+		itemsFetch(dispatch, cat);
+		meatFetch(dispatch);
+		sauceFetch(dispatch);
 	}, [cat, dispatch]);
 
 	const { itemList, pending, error } = useSelector(getState);

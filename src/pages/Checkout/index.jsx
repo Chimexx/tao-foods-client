@@ -2,8 +2,13 @@ import {
 	Button,
 	Card,
 	CardActionArea,
+	CardActions,
 	CardContent,
 	Container,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
 	TextField,
 	Typography,
 } from "@material-ui/core";
@@ -17,6 +22,9 @@ import { PaystackButton } from "react-paystack";
 import { useDispatch } from "react-redux";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { ClassicSpinner } from "react-spinners-kit";
+import { publicRequest } from "../../requestMethods";
+import { setSnackbar } from "../../redux/snackbarSlice";
 
 const Checkout = () => {
 	const navigate = useNavigate();
@@ -31,9 +39,10 @@ const Checkout = () => {
 	const [address, setAddress] = useState("");
 	const [instructions, setInstructions] = useState("");
 	const [paymentMethod, setPaymentMethod] = useState("");
+	const [inputE, setInputE] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-	// const [complete, setComplete] = useState(false);
-
+	console.log(paymentMethod);
 	const handleclearCart = () => {
 		dispatch(clearCart());
 	};
@@ -54,13 +63,25 @@ const Checkout = () => {
 	};
 
 	const postData = async () => {
-		const response = await fetch("https://tao-foods.herokuapp.com/api/orders/new", {
-			method: "POST",
-			body: JSON.stringify(order),
-			headers: { "Content-type": "application/json" },
-		});
-		const orderRes = await response.json();
-		console.log(orderRes);
+		try {
+			await publicRequest.post("orders/new", order);
+			dispatch(
+				setSnackbar({
+					snackbarOpen: true,
+					snackbarType: "success",
+					snackbarMessage: `Order Placed!`,
+				})
+			);
+		} catch (error) {
+			console.log(error);
+			dispatch(
+				setSnackbar({
+					snackbarOpen: true,
+					snackbarType: "error",
+					snackbarMessage: `There was a problem, Please return to your tray.`,
+				})
+			);
+		}
 	};
 	const componentProps = {
 		reference,
@@ -74,7 +95,7 @@ const Checkout = () => {
 		publicKey,
 		text: "PAY ONLINE",
 		onSuccess: () => {
-			setPaymentMethod("Card");
+			setLoading(true);
 			postData();
 			setEmail("");
 			setFirstName("");
@@ -82,15 +103,16 @@ const Checkout = () => {
 			setPhoneNumber("");
 			setAddress("");
 			setInstructions("");
+			setLoading(false);
 			handleclearCart();
 			navigate("/orderSuccess");
 		},
-		// onClose: () => console.log("Transaction canceled"),
+		onClose: () => alert("Transaction canceled"),
 	};
 
-	const payOnDelivery = () => {
-		setPaymentMethod("PoD");
-		postData();
+	const payOnDelivery = async () => {
+		setLoading(true);
+		await postData();
 		setEmail("");
 		setFirstName("");
 		setLastName("");
@@ -99,13 +121,12 @@ const Checkout = () => {
 		setInstructions("");
 		handleclearCart();
 		navigate("/orderSuccess");
+		setLoading(false);
 	};
 
 	let complete = false;
-	let info = true;
 	if (firstName && lastName && email && phoneNumber && address && cartItems.length > 0 && amount > 100) {
 		complete = true;
-		info = false;
 	}
 
 	return (
@@ -128,10 +149,15 @@ const Checkout = () => {
 							>
 								Checkout
 							</Typography>
-							{info && <h6>Please fill the form below to place your order</h6>}
+
+							<Typography className={classes.info}>
+								Complete the form to proceed with your order
+							</Typography>
 							<div className={classes.personal}>
 								<TextField
-									id="filled-basic"
+									required
+									error={inputE}
+									helperText={inputE && "Field Required"}
 									className={classes.item}
 									type="text"
 									size="small"
@@ -141,8 +167,10 @@ const Checkout = () => {
 									onChange={(e) => setFirstName(e.target.value)}
 								/>
 								<TextField
-									id="filled-basic"
 									className={classes.item}
+									required
+									error={inputE}
+									helperText={inputE && "Field Required"}
 									type="text"
 									size="small"
 									label="Last Name"
@@ -151,8 +179,10 @@ const Checkout = () => {
 									onChange={(e) => setLastName(e.target.value)}
 								/>
 								<TextField
-									id="filled-basic"
 									className={classes.item}
+									required
+									error={inputE}
+									helperText={inputE && "Field Required"}
 									type="number"
 									size="small"
 									label="Phone"
@@ -161,7 +191,9 @@ const Checkout = () => {
 									onChange={(e) => setPhoneNumber(e.target.value)}
 								/>
 								<TextField
-									id="filled-basic"
+									required
+									error={inputE}
+									helperText={inputE && "Field Required"}
 									className={classes.item}
 									type="email"
 									size="small"
@@ -172,15 +204,16 @@ const Checkout = () => {
 								/>
 
 								<TextField
-									id="filled-basic"
 									className={classes.item}
+									required
+									error={inputE}
+									helperText={inputE && "Field Required, Your concise location"}
 									type="text"
 									size="small"
 									label="Address"
 									variant="filled"
 									multiline
 									color="primary"
-									helperText="Clearly described address to help locate you"
 									onChange={(e) => setAddress(e.target.value)}
 								/>
 								<TextField
@@ -199,12 +232,41 @@ const Checkout = () => {
 						</CardContent>
 					</CardActionArea>
 					{complete && (
-						<div className={classes.btngrp}>
-							<PaystackButton className={classes.onlinebtn} {...componentProps} />
-							<Button className={classes.onlinebtn} onClick={payOnDelivery}>
-								Pay on delivery
-							</Button>
-						</div>
+						<>
+							<CardActions className={classes.personal}>
+								<FormControl variant="filled">
+									<InputLabel id="demo-simple-select-filled-label">
+										SELECT PAYMENT METHOD
+									</InputLabel>
+									<Select
+										labelId="demo-simple-select-filled-label"
+										id="demo-simple-select-filled"
+										value={paymentMethod}
+										size="small"
+										onChange={(e) => setPaymentMethod(e.target.value)}
+									>
+										<MenuItem value="online">PAY ONLINE</MenuItem>
+										<MenuItem value="on-delivery">PAY ON DELIVERY</MenuItem>
+									</Select>
+								</FormControl>
+								{loading ? (
+									<ClassicSpinner color="#ffae00" size={20} />
+								) : (
+									<>
+										{paymentMethod === "on-delivery" ? (
+											<Button className={classes.onlinebtn} onClick={payOnDelivery}>
+												Pay on delivery
+											</Button>
+										) : (
+											<PaystackButton
+												className={classes.onlinebtn}
+												{...componentProps}
+											/>
+										)}
+									</>
+								)}
+							</CardActions>
+						</>
 					)}
 				</Card>
 			</Container>

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
 
 const initialState = {
 	cartItems: localStorage.getItem("cartItems") ? JSON.parse(localStorage.getItem("cartItems")) : [],
@@ -19,17 +18,9 @@ const cartSlice = createSlice({
 					state.cartItems[itemIndex].quantity += 1;
 				} else {
 					state.cartItems.push(action.payload);
-					toast.success(`${action.payload.title} added to Cart`, {
-						position: toast.POSITION.BOTTOM_RIGHT,
-						autoClose: 3000,
-					});
 				}
 			} else {
 				state.cartItems.push(action.payload);
-				toast.success(`${action.payload.title} added to Cart`, {
-					position: toast.POSITION.BOTTOM_RIGHT,
-					autoClose: 3000,
-				});
 			}
 
 			localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
@@ -38,10 +29,6 @@ const cartSlice = createSlice({
 		removeFromCart: (state, action) => {
 			const newItems = state.cartItems.filter((item) => item._id !== action.payload._id);
 			state.cartItems = newItems;
-			toast.warn(` ${action.payload.title} removed from Cart`, {
-				position: toast.POSITION.BOTTOM_RIGHT,
-				autoClose: 3000,
-			});
 
 			localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
 		},
@@ -53,19 +40,11 @@ const cartSlice = createSlice({
 			} else if ((state.cartItems[itemIndex].quantity = 1)) {
 				const newItems = state.cartItems.filter((item) => item._id !== action.payload._id);
 				state.cartItems = newItems;
-				toast.warn(` ${action.payload.title} removed from Cart`, {
-					position: toast.POSITION.BOTTOM_RIGHT,
-					autoClose: 3000,
-				});
 			}
 			localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
 		},
 		clearCart: (state, action) => {
 			state.cartItems = [];
-			toast.warn("Cart is now empty", {
-				position: toast.POSITION.BOTTOM_RIGHT,
-				autoClose: 3000,
-			});
 			localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
 		},
 		getTotals: (state, action) => {

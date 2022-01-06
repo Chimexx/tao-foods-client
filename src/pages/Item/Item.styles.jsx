@@ -17,8 +17,9 @@ export const useStyles = makeStyles((theme) => ({
 		},
 	},
 	media: {
-		maxWidth: 400,
+		maxWidth: 450,
 		margin: "0 auto",
+		objectFit: "cover",
 
 		[theme.breakpoints.down("sm")]: {
 			width: "100vw",
@@ -40,23 +41,13 @@ export const useStyles = makeStyles((theme) => ({
 	span: {
 		fontSize: "10px",
 		color: "#aaa",
-
-		// [theme.breakpoints.down("sm")]: {
-		// 	width: 380,
-		// 	height: 200,
-		// },
 	},
 	content: {
 		margin: "0 auto",
-		// [theme.breakpoints.down("sm")]: {
-		// 	width: 380,
-		// 	height: 200,
-		// },
 	},
 	card: {
 		display: "flex",
 		marginBottom: theme.spacing(2),
-		// margin: "0 auto",
 		marginLeft: 0,
 		justifyContent: "space-between",
 		alignItems: "center",
@@ -74,6 +65,7 @@ export const useStyles = makeStyles((theme) => ({
 	},
 	desc: {
 		marginBottom: theme.spacing(2),
+		color: "#707070",
 		[theme.breakpoints.down("xs")]: {
 			marginBottom: theme.spacing(0.5),
 			fontSize: 12,
