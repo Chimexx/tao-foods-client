@@ -2,7 +2,15 @@ a {
 	text-decoration: none;
 }
 
-/* .app {
-	min-height: calc(100vh - 60px);
-	z-index: "300";
-} */
+.app {
+	animation: animateHeroImage 1s;
+
+	@keyframes animateHeroImage {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+}
